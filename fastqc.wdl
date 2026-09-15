@@ -33,7 +33,7 @@ task fastqc {
 	}
 	Int finalDiskSize = addldisk + ceil(size(fastqs, "GB"))
 
-	command <
+	command <<<
 		mkdir outputs
 		if [[ "~{limits}" != "" ]]
 		then
