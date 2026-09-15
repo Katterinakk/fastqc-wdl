@@ -56,3 +56,4 @@ task fastqc {
 		Array[File] zip_reports = glob("outputs/*.zip")
 	}
 }
+#
