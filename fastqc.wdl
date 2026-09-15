@@ -13,11 +13,12 @@ workflow FastqcWF {
 	}
 
 	output {
-		Array[File] reports = fastqc.reports
+		Array[File] html_reports = fastqc.html_reports
+		Array[File] zip_reports = fastqc.zip_reports
 	}
 
 	meta {
-		author: "Ash O'Farrell"
+		author: "Ash O'Farrell (patched: added -t threads, preserved zip outputs)"
 	}
 }
 
@@ -28,17 +29,17 @@ task fastqc {
 		Int addldisk = 10
 		Int cpu = 4
 		Int memory = 8
-		Int preempt = 1 
+		Int preempt = 1
 	}
 	Int finalDiskSize = addldisk + ceil(size(fastqs, "GB"))
 
-	command <<<
+	command <
 		mkdir outputs
 		if [[ "~{limits}" != "" ]]
 		then
-			fastqc -o outputs -l ~{limits} ~{sep=" " fastqs}
+			fastqc -o outputs -t ~{cpu} -l ~{limits} ~{sep=" " fastqs}
 		else
-			fastqc -o outputs ~{sep=" " fastqs}
+			fastqc -o outputs -t ~{cpu} ~{sep=" " fastqs}
 		fi
 	>>>
 
@@ -51,7 +52,7 @@ task fastqc {
 	}
 
 	output {
-		Array[File] reports = glob("outputs/*.html")
+		Array[File] html_reports = glob("outputs/*.html")
+		Array[File] zip_reports = glob("outputs/*.zip")
 	}
-	
 }
